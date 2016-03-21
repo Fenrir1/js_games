@@ -1,0 +1,42 @@
+body {
+	background-image: url(bg_noise.png);
+	background-color: #4d494c;
+	}
+	
+#mainField	{
+	background-color: white;
+}
+
+#discr {
+	width: 70%;
+	text-align: center;
+	padding: 10px;
+	border: 1px solid green;
+    margin: auto;
+	}
+	
+#deckList	{
+	}
+	
+#gameInfo {
+	width: 70%;
+	text-align: center;
+	padding: 10px;
+	border: 1px solid gray;
+    margin: auto;
+	}	
+	
+#mainTable	td {
+	vertical-align: top;
+	}
+	
+.imgList ul {
+ margin: 0;
+ padding: 0;
+ list-style: none;
+}
+
+.imgList li {
+ display: inline;
+ float: left;
+}	

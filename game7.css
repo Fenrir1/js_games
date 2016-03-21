@@ -1,0 +1,51 @@
+@font-face {
+    font-family: 'Lobster';
+    src: url('Lobster_1.3.otf');
+}
+
+
+body {
+	background-image: url(bg_noise.png);
+	background-color: #4d494c;
+	}
+
+.header {
+   color: #d66113;
+   font-size: 42px;
+   font-family: 'Lobster';
+   text-shadow: 2px 0px 0px #000000;
+}	
+
+.button {
+   width: 60px;
+   text-align: center;
+   border-top: 1px solid #f78b8b;
+   background: #d665ab;
+   background: -webkit-gradient(linear, left top, left bottom, from(#f72e71), to(#d665ab));
+   background: -webkit-linear-gradient(top, #f72e71, #d665ab);
+   background: -moz-linear-gradient(top, #f72e71, #d665ab);
+   background: -ms-linear-gradient(top, #f72e71, #d665ab);
+   background: -o-linear-gradient(top, #f72e71, #d665ab);
+   padding: 5px 10px;
+   -webkit-border-radius: 8px;
+   -moz-border-radius: 8px;
+   border-radius: 8px;
+   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   box-shadow: rgba(0,0,0,1) 0 1px 0;
+   text-shadow: rgba(0,0,0,.4) 0 1px 0;
+   color: #fabedb;
+   font-size: 14px;
+   font-family: 'Lobster';
+   text-decoration: none;
+   vertical-align: middle;
+   }
+.button:hover {
+   border-top-color: #e86f6f;
+   background: #e86f6f;
+   color: #ffd1d9;
+   }
+.button:active {
+   border-top-color: #5c1b3b;
+   background: #5c1b3b;
+   }	

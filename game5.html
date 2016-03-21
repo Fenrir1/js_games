@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Жизнь</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=Windows-1251">
+	<script language="javascript" type="text/javascript" src="jquery/jquery-1.4.2.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery/jquery-ui-1.7.2.custom.css">
+<link rel="stylesheet" type="text/css" href="game5.css">
+<script language="javascript" type="text/javascript" src="jquery/jquery-ui-1.7.2.custom.min.js"></script>
+</head>
+<body>
+ <input type="button" onclick="clearTimeout(timer)" value="Стоп">
+ <canvas id="mainField" height="600" width="600"></canvas>
+ 
+ <canvas id="gfx" height="479" width="755"></canvas>
+ 
+<script>
+var imgDot=new Image();
+imgDot.src="img/dot.jpg";
+var clcl=1;
+
+var maxy=60;
+var maxx=60;
+var dotSize=10;
+var readpage=0;
+var writepage=1;
+var frame=0;
+
+var data = new Array(2);//flipping pages
+data[0] = new Array(maxy);//Y
+data[1] = new Array(maxy);//Y
+
+
+var imgDot=new Image();
+imgDot.src="img/dot.jpg";
+
+
+generateField();
+
+function drawDot(x,y,num,bord)
+{
+  var c=document.getElementById("mainField"); 
+  var ctx=c.getContext('2d');
+
+  
+  if (num != 0){
+	ctx.drawImage(imgDot,x*dotSize,y*dotSize,dotSize,dotSize);
+  }
+  else
+  {
+	ctx.clearRect(x*dotSize,y*dotSize, dotSize, dotSize);
+  }
+}
+
+function generateField()
+{
+	var rand=0;
+	for(var y=0;y<maxy;y++)//We do not process 1px border
+	{
+	        data[0][y]=[];
+		    data[1][y]=[];
+		for(var x=0;x<maxx;x++)
+		{
+			rand = Math.random()*2;
+	        rand = rand^0; // округление битовым оператором
+			data[0][y].push(rand);
+		    data[1][y].push(rand);
+		}
+
+	}
+  var c=document.getElementById("mainField"); 
+  var ctx=c.getContext('2d');
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, 600, 600);
+	
+}
+
+function repaint()
+{
+for(var y=1;y<maxy-1;y++)//We do not process 1px border
+  for(var x=1;x<maxx-1;x++)
+  {
+   var sum = 
+      data[readpage][y-1][x-1] + data[readpage][y-1][x] + data[readpage][y-1][x+1] +   
+      data[readpage][y][x-1] + data[readpage][y][x+1] +   
+      data[readpage][y+1][x-1] + data[readpage][y+1][x] + data[readpage][y+1][x+1];
+	  
+   var roundBorder = ''+
+      data[readpage][y-1][x-1] + data[readpage][y-1][x] + data[readpage][y-1][x+1] +   
+      data[readpage][y][x-1] + data[readpage][y][x+1] +   
+      data[readpage][y+1][x-1] + data[readpage][y+1][x] + data[readpage][y+1][x+1];	  
+	  
+	  /*
+	  
+	  0 1 2   1 1 0
+	  3   4   0   0
+	  5 6 7   0 0 0
+	  
+	  0 1 1
+      0   0
+	  0 0 0
+	  
+	  1 0 0
+      1   0
+	  0 0 0
+	  
+	  0 0 1
+      0   1
+	  0 0 0
+	  
+	  1 0 1
+      0   0
+	  0 0 0
+	  
+	  0 0 0
+      1   1
+	  0 0 0
+	  
+	  0 0 0
+      0   0
+	  1 0 1
+	  
+	  1 1 0 0 0 0 0 0
+	  0 1 1 0 0 0 0 0
+	  1 0 0 1 0 0 0 0
+	  0 0 1 0 1 0 0 0
+	  1 0 1 0 0 0 0 0
+	  0 0 0 1 1 0 0 0
+	  0 0 0 0 0 1 0 1
+	  0 0 0 0 0 1 1 0
+	  0 0 0 0 0 0 1 1
+	  0 0 0 0 1 0 0 1
+	  0 0 0 1 0 1 0 0
+
+	  */
+    
+    if(sum==3 || (sum==2 && data[readpage][y][x]))
+      data[writepage][y][x] = 1;
+    else
+      data[writepage][y][x] = 0;
+
+    drawDot(x,y,data[writepage][y][x],roundBorder);
+  }
+  
+ clean(); 
+}
+
+function clean()
+{
+for(var y=0;y<maxy;y++)//We do not process 1px border
+  for(var x=0;x<maxx;x++)
+  {
+     data[readpage][y][x]=data[writepage][y][x]; 
+   
+  }
+  
+}
+
+
+//We need to use requestAnimationFrame to stop animation when page is hidden in background tab, so that we don't load CPU when nobody is watching
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       || 
+          window.webkitRequestAnimationFrame || 
+          window.mozRequestAnimationFrame    || 
+          window.oRequestAnimationFrame      || 
+          window.msRequestAnimationFrame     || 
+          function( callback ){
+            window.setTimeout(callback, 1);
+          };
+})();
+
+
+function frameEventHandler()
+{
+  //do1step();
+  repaint();
+  
+  frame++;
+
+  if(frame<20000)//Show must not go on for too long to save some power if page is left open accidentally
+    setTimeout(function() {requestAnimFrame(frameEventHandler);}, Math.max(33 , 800.0/(frame+1)));
+}
+
+
+//LAUNCH IT --------------------------
+setTimeout(frameEventHandler, 500);
+//benchmark();
+
+</script>
+
+<script>
+/*generateField();
+
+  var timer = setTimeout(function run() {
+	    repaint();
+	    timer = setTimeout(run, 200);
+	  }, 200);*/
+
+</script>
+
+</body>
+</html>

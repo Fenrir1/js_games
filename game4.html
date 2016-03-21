@@ -1,0 +1,523 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Тестирование разддачи</title>
+<meta http-equiv="Content-Type" content="text/html; charset=Windows-1251">
+<script language="javascript" type="text/javascript" src="jquery/jquery-1.4.2.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery/jquery-ui-1.7.2.custom.css">
+<link rel="stylesheet" type="text/css" href="game4.css">
+<script language="javascript" type="text/javascript" src="jquery/jquery-ui-1.7.2.custom.min.js"></script>
+<script>
+var maxCount=60;
+var deckCount=0;
+
+var mainDeck=[];
+var plyerHand=[];
+var plyerScry=[];
+var plyerGrave=[];
+var plyerExiled=[];
+
+var moveNumber=1;
+var selectedCard=0;
+var inGame=[];
+var imageSize=200;
+
+
+ $(document).ready(function(){
+	createDrawForm(); 
+	$( "#scryList" ).dialog({ autoOpen: false, zIndex: 99, close :function(event,ui){ cleanScry();} });
+  });
+  
+Array.prototype.shuffle = function( b )
+{
+ var i = this.length, j, t;
+ while( i ) 
+ {
+  j = Math.floor( ( i-- ) * Math.random() );
+  t = b && typeof this[i].shuffle!=='undefined' ? this[i].shuffle() : this[i];
+  this[i] = this[j];
+  this[j] = t;
+ }
+
+ return this;
+};  
+
+function surfleMainDeck()
+{
+ mainDeck.shuffle();
+}
+
+function cleanScry()
+{
+ if (plyerScry.length>0)
+ {
+   for(var i=0;i<plyerScry.length;i++) mainDeck.push(plyerScry[i]);
+   plyerScry=[];
+ }
+ showGameInf();
+}
+
+function dropHand()
+{
+ plyerHand=[];
+ $('#imgHand').html('');
+}
+
+function dropGrave()
+{
+ plyerGrave=[];
+ $('#listGrave').html('');
+}
+
+function dropExiled()
+{
+ plyerExiled=[];
+ $('#listExiled').html('');
+}
+
+function createMainDeck()
+{
+ mainDeck=[];
+ dropHand();
+ dropGrave();
+ dropExiled();
+ moveNumber=1;
+ inGame=[];
+ readMainDeck();
+ mainDeck.shuffle();
+ showGameInf();
+}
+
+function goDraw()
+{
+ var drawCount=+$('#drawCount').attr('value');
+ if (mainDeck.length>=drawCount)
+ {
+   for(var i=0;i<drawCount;i++) plyerHand.push(mainDeck[i]);
+   mainDeck.splice(0,drawCount);
+ }
+ showHand();
+ showGameInf();
+}
+
+function goScry()
+{
+ var drawCount=+$('#drawCount').attr('value');
+ if (mainDeck.length>=drawCount)
+ {
+   for(var i=0;i<drawCount;i++) plyerScry.push(mainDeck[i]);
+   mainDeck.splice(0,drawCount);
+ }
+ 
+ 	/*var htmlText="<ul>"
+	var htmlText1="<ul class='imgList' >"
+	for(var i=0;i<plyerHand.length;i++){
+	 htmlText+="<li onclick='playCard("+i+")' >"+plyerHand[i]+"</li>";
+	 htmlText1+="<li onclick='showActionList("+i+",event.pageX,event.pageY)' ><input type='image' src='http://www.wizards.com/global/images/magic/general/"+prepareCardName(plyerHand[i])+".jpg' ></li>";
+	 }
+	htmlText+="</ul>"
+	htmlText1+="</ul>"*/
+ showGameInf();
+ showScry();
+ //showGameInf();
+}
+
+function goSearchLibrary()
+{
+	var htmlText="<ul>"
+	var htmlText1="<ul class='imgList' >"
+	for(var i=0;i<mainDeck.length;i++){
+	 htmlText+="<li onclick='playCard("+i+")' >"+plyerScry[i]+"</li>";
+	 htmlText1+="<li onclick='showSearchActionList("+i+",event.pageX,event.pageY)' >"+mainDeck[i]+"</li>";
+	 }
+	htmlText+="</ul>"
+	htmlText1+="</ul>"
+	//$('#drawForm').html(htmlText);
+	$('#scryList').html(htmlText1);
+	$('#scryList').dialog('open');
+
+}
+
+function prepareCardName(name)
+{
+ var correctName=name.replace(/ |-/g,'_');
+ correctName=correctName.replace(/'|,/g,'');
+ return correctName;
+}
+
+function showHand()
+{ 
+
+	var htmlText="<ul>"
+	var htmlText1="<ul class='imgList' >"
+	for(var i=0;i<plyerHand.length;i++){
+	 htmlText+="<li onclick='playCard("+i+")' >"+plyerHand[i]+"</li>";
+	 htmlText1+="<li onclick='showActionList("+i+",event.pageX,event.pageY)' ><input type='image' height='"+imageSize+"px' src='http://www.wizards.com/global/images/magic/general/"+prepareCardName(plyerHand[i])+".jpg' ></li>";
+	 }
+	htmlText+="</ul>"
+	htmlText1+="</ul>"
+	//$('#drawForm').html(htmlText);
+	$('#imgHand').html(htmlText1);
+}
+
+function showScry()
+{ 
+   
+	var htmlText="<ul>"
+	var htmlText1="<ul class='imgList' >"
+	for(var i=0;i<plyerScry.length;i++){
+	 htmlText+="<li onclick='playCard("+i+")' >"+plyerScry[i]+"</li>";
+	 htmlText1+="<li onclick='showScryActionList("+i+",event.pageX,event.pageY)' ><input type='image' height='"+imageSize+"px' src='http://www.wizards.com/global/images/magic/general/"+prepareCardName(plyerScry[i])+".jpg' ></li>";
+	 }
+	htmlText+="</ul>"
+	htmlText1+="</ul>"
+	//$('#drawForm').html(htmlText);
+	$('#scryList').html(htmlText1);
+	$('#scryList').dialog('open');
+	
+}
+
+function closeScry()
+{
+ $('#scryList').hide(500);
+}
+
+function showActionList(num,relativeX,relativeY)
+{
+ 
+   $('#actionList').css('left',relativeX);
+   $('#actionList').css('top',relativeY);
+   
+	selectedCard=num;
+	$('#actionList').show(500);
+}
+
+function showScryActionList(num,relativeX,relativeY)
+{
+ 
+   $('#actionScryList').css('left',relativeX);
+   $('#actionScryList').css('top',relativeY);
+   
+	selectedCard=num;
+	$('#actionScryList').show(500);
+}
+
+function showSearchActionList(num,relativeX,relativeY)
+{
+   $('#actionSearchList').css('left',relativeX);
+   $('#actionSearchList').css('top',relativeY);
+   selectedCard=num;
+   $('#actionSearchList').show(500);
+}
+
+function doAction(actionType)
+{
+	$('#actionList').hide(500);
+	if (actionType==1) playCard(selectedCard);
+	if (actionType==2) graveCard(selectedCard);
+	if (actionType==3) exileCard(selectedCard);
+}
+
+function doScryAction(actionType)
+{
+	$('#actionScryList').hide(500);
+	if (actionType==1) drawScryCard(selectedCard);
+	if (actionType==2) topDeckScryCard(selectedCard);
+	if (actionType==3) botDeckScryCard(selectedCard);
+	if (actionType==4) graveScryCard(selectedCard);
+	if (actionType==5) exileScryCard(selectedCard);
+}
+
+function doSearchAction(actionType)
+{
+	$('#actionSearchList').hide(500);
+	if (actionType==1) drawSearchCard(selectedCard);
+	if (actionType==2) graveSearchCard(selectedCard);
+	if (actionType==3) exileSearchCard(selectedCard);
+}
+
+function drawSearchCard(num)
+{
+ if ((num>=0)&&(num<mainDeck.length))
+ {
+  plyerHand.push(mainDeck[num]);
+  mainDeck.splice(num, 1);
+ }
+ showGameInf();
+ showHand();
+ showScry(); 
+}
+
+function graveSearchCard(num)
+{
+ if ((num>=0)&&(num<mainDeck.length))
+ {
+  plyerGrave.push(mainDeck[num]);
+  mainDeck.splice(num, 1);
+ }
+ showGameInf();
+ showHand();
+ showScry();
+}
+
+function exileSearchCard(num)
+{
+ if ((num>=0)&&(num<mainDeck.length))
+ {
+  plyerExiled.push(mainDeck[num]);
+  mainDeck.splice(num, 1);
+ }
+ showGameInf();
+ showHand();
+ showScry();
+}
+
+function drawScryCard(num)
+{
+ if ((num>=0)&&(num<plyerScry.length))
+ {
+  plyerHand.push(plyerScry[num]);
+  plyerScry.splice(num, 1);
+ }
+ showGameInf();
+ showHand();
+ showScry(); 
+}
+
+function topDeckScryCard(num)
+{
+ if ((num>=0)&&(num<plyerScry.length))
+ {
+  mainDeck.splice(0, 0, plyerScry[num]); 
+  plyerScry.splice(num, 1);
+ }
+ showGameInf();
+ showHand();
+ showScry(); 
+}
+
+function botDeckScryCard(num)
+{
+ if ((num>=0)&&(num<plyerScry.length))
+ {
+  mainDeck.push(plyerScry[num]);
+  plyerScry.splice(num, 1);
+ }
+ showGameInf();
+ showHand();
+ showScry(); 
+}
+
+function graveScryCard(num)
+{
+ if ((num>=0)&&(num<plyerScry.length))
+ {
+  plyerGrave.push(plyerScry[num]);
+  plyerScry.splice(num, 1);
+ }
+ showGameInf();
+ showHand();
+ showScry();
+}
+
+function exileScryCard(num)
+{
+ if ((num>=0)&&(num<plyerScry.length))
+ {
+  plyerExiled.push(plyerScry[num]);
+  plyerScry.splice(num, 1);
+ }
+ showGameInf();
+ showHand();
+ showScry();
+}
+
+function exileCard(num)
+{
+ if ((num>=0)&&(num<plyerHand.length))
+ {
+  plyerExiled.push(plyerHand[num]);
+  plyerHand.splice(num, 1);
+ }
+ showHand();
+ showGameInf();
+}
+
+function graveCard(num)
+{
+ if ((num>=0)&&(num<plyerHand.length))
+ {
+  plyerGrave.push(plyerHand[num]);
+  plyerHand.splice(num, 1);
+ }
+ showHand();
+ showGameInf();
+}
+
+function playCard(num)
+{
+ if ((num>=0)&&(num<plyerHand.length))
+ {
+  inGame.push(plyerHand[num]);
+  plyerHand.splice(num, 1);
+ }
+ showHand();
+ showGameInf();
+}
+
+function  showGameInf()
+{
+ var htmlText="Номер хода: "+moveNumber;
+ htmlText+=" Карт в колоде: "+mainDeck.length;
+ htmlText+="<br/>В игре:<br/>";
+ htmlText+="<div style='overflow: auto;' >"
+ htmlText+="<ul class='imgList' >";
+ for(var i=0;i<inGame.length;i++) 
+	htmlText+="<li>"+inGame[i]+";&nbsp;</li>";
+ htmlText+="</ul><br/>";
+ htmlText+="</div>"
+ $('#gameInfo').html(htmlText);
+ 
+ htmlText=""
+ htmlText+="<div style='overflow: auto;' >"
+ htmlText+="<ul class='imgList' >";
+ for(var i=0;i<plyerGrave.length;i++) 
+	htmlText+="<li>"+plyerGrave[i]+";&nbsp;</li>";
+ htmlText+="</ul><br/>";
+ htmlText+="</div>"
+ $('#listGrave').html(htmlText);
+ 
+ htmlText=""
+ htmlText+="<div style='overflow: auto;' >"
+ htmlText+="<ul class='imgList' >";
+ for(var i=0;i<plyerExiled.length;i++) 
+	htmlText+="<li>"+plyerExiled[i]+";&nbsp;</li>";
+ htmlText+="</ul><br/>";
+ htmlText+="</div>"
+ $('#listExiled').html(htmlText);
+ 
+}
+
+function nextTurn()
+{
+ moveNumber++;
+ showGameInf();
+}
+
+function lifeMinus()
+{
+ $('#TotalLife').attr('value',($('#TotalLife').attr('value')-1));
+}
+
+function lifePlus()
+{
+ $('#TotalLife').attr('value',($('#TotalLife').attr('value')*1+1));
+}
+
+function createDrawForm()
+{
+ var htmlText="<button onClick='nextTurn();' >СЛЕДУЮЩИЙ ХОД</button><br/><select id='drawCount' >";
+ for(var i=0;i<maxCount;i++) 
+	htmlText+="<option value="+(i+1)+" >"+(i+1)+"</option>";
+ htmlText+="</select><button onClick='goDraw();' >ВЗЯТЬ</button><button onClick='goScry();' >Посмотреть</button>";
+ htmlText+="<br><button onClick='goSearchLibrary();' >Просмотреть библиотеку</button>";
+ htmlText+="<br><input id='TotalLife' type='text' value='20' ><button onClick='lifeMinus();' >-</button><button onClick='lifePlus();' >+</button>";
+ $('#yourHand').html(htmlText);
+}
+
+function readMainDeck()
+{
+ //mainDeck = $('#deckList').val().split('\n');
+ var textList=$('#deckList').val()+'\n';
+ var i=0;
+ var j=0;
+ var cardName='';
+ var cardCount=0;
+ 
+ while (i<textList.length)
+ {
+   i=textList.indexOf('\n');
+   cardName=textList.slice(0,i);
+   if (cardName!='')
+   {
+	j=cardName.indexOf(' ')
+	cardCount=+cardName.slice(0,j);
+	cardName=cardName.slice(j+1);
+	for(var t=0;t<cardCount;t++) mainDeck.push(cardName);
+   }
+   textList=textList.slice(i+1);
+ }
+ 
+ deckCount=mainDeck.length;
+}
+
+function dropList()
+{
+	$('#deckList').val('');
+}
+
+
+</script>
+</head>
+<body>
+<div id='discr' >
+ Приветствую!
+ Этот сервис предназначен для имитации "раздачи карт". То-есть, мы задаём состав колоды, а
+  программа "пермешивает карты". После чего можно посмотреть каких раздач можно ожидать. 
+  Этот ресурс создан исключительно для тестирования и не претендует на точность работы. 
+  Вся ответственность за использование сервиса и результатов его работы лежит исключительно 
+  на пользователе.
+</div>
+<br/>
+
+<table id='mainTable' >
+<tr><td>
+<div  onclick='createMainDeck();' >СФОРМИРОВАТЬ</div>
+<div id='doShurfle' onclick='surfleMainDeck();' >ПЕРЕМЕШАТЬ</div>
+<div  onclick='dropHand();' >ОЧИСТИТЬ РУКУ</div>
+<div  onclick='dropGrave();' >ОЧИСТИТЬ КЛАДБИЩЕ</div>
+<div  onclick='dropList();' >ОЧИСТИТЬ СПИСОК</div>
+<textarea id='deckList'	rows=15 cols=25 spellcheck="false" ></textarea >
+<div id='drawForm' ></div>
+<div id='yourHand' ></div>
+</td>
+<td>
+<div id='gameInfo' ></div>
+<div id='imgHand' ></div>
+</td></tr>
+<tr >
+<td>
+</td><td>
+<div id='listGrave' >Graveyard</div>
+<div id='listExiled' >Exiled</div>
+</td>
+</tr>
+</table>
+
+<div id='actionList' style="Z-INDEX: 1000; Position: absolute; display: none; WIDTH: 109px; HEIGHT: 45px">
+<table style='background-color: #c7b39b;'><tr><td><a href="#" onClick='doAction(1);' >В игру</a></td></tr>
+<tr><td><a href="#" onClick='doAction(2);' >На кладбище</a></td></tr><tr><td><a href="#" onClick='doAction(3);'>В изгнание</a></td></tr></table></div>
+
+<div id='actionScryList' style="Z-INDEX: 1000; Position: absolute; display: none; WIDTH: 109px; HEIGHT: 45px">
+<table style='background-color: #c7b39b;'><tr><td><a href="#" onClick='doScryAction(1);' >В руку</a></td></tr>
+<tr><td><a href="#" onClick='doScryAction(2);' >На верх библиотеки</a></td></tr>
+<tr><td><a href="#" onClick='doScryAction(3);' >В низ библиотеки</a></td></tr>
+<tr><td><a href="#" onClick='doScryAction(4);'>На кладбище</a></td></tr>
+<tr><td><a href="#" onClick='doScryAction(5);'>В изгнание</a></td></tr>
+</table></div>
+
+<div id='actionSearchList' style="Z-INDEX: 1000; Position: absolute; display: none; WIDTH: 109px; HEIGHT: 45px">
+<table style='background-color: #c7b39b;'><tr><td><a href="#" onClick='doSearchAction(1);' >В руку</a></td></tr>
+<tr><td><a href="#" onClick='doSearchAction(2);'>На кладбище</a></td></tr>
+<tr><td><a href="#" onClick='doSearchAction(3);'>В изгнание</a></td></tr>
+</table></div>
+
+
+<div id="scryList" title="Просмотр карт">
+ </div>
+
+
+</body>
+</html>
+
+

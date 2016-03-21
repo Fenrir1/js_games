@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>Game 3</title>
+<script src="animate.js"></script>
+<style>
+ body {background: url(wall.jpeg);}
+ #dark {
+   width: 600px;
+   height: 600px;
+   left: 60px;
+   top: 120px;
+   background: #000000; }
+ #candle {
+   position: absolute;
+   left: 60px;
+   top: 120px;
+ }
+ #light {
+   width: 1000px;
+   height: 1000px;
+  background: -moz-radial-gradient(10% 10%, circle , rgba(250, 209, 36, 0.5) 0% , rgba(1,1, 1, 1) 15% );}
+
+</style>
+</head>
+<body>
+<div id="info" ></div>
+<div id="light" ><img id="candle" width="18" height="50" src="candle.png" ></div>
+<img id="fly" width="5" height="5" src="fly.jpg" >
+
+
+<script>
+var fly = document.getElementsByTagName('fly');
+animateProp({
+	  elem: fly,
+	  prop: "left",
+	  start: 0,
+	  duration: 2000,
+	  end: document.body.clientWidth
+	});
+
+
+
+	var candle = document.getElementById("candle"); // свеча
+	var light = document.getElementById("light");   // ширма+пятносвета
+	var inf = document.getElementById("info");      // вывод информации
+	
+	var stepLeft=8; // отступ ширмы слева
+	var stepTop=27; // отступ ширмы сверху
+	var widthShield=1000; //ширина  ширмы
+	 
+	candle.onmousedown = function(e) { // отследить нажатие
+	  var self = this;
+	  fixEvent = e;  //fixEvent-сделать фикс для эксплорера
+	 
+	  // подготовить к перемещению
+	  // разместить на том же месте, но в абсолютных координатах
+	  this.style.position = 'absolute';
+	  candle.style.position = 'absolute';
+	  moveAt(fixEvent);
+	  // переместим в body, чтобы мяч был точно не внутри position:relative
+	  document.body.appendChild(this);
+	 
+	  candle.style.zIndex = 1000; // показывать свечу над другими элементами
+	   
+	  // передвинуть свечу под координаты курсора  
+	  function moveAt(e) {
+		inf.innerHTML=~~((-stepLeft+e.pageX)*100/widthShield)+';'+~~((-stepTop+e.pageY)*100/widthShield);
+		
+	    light.style.background= '-moz-radial-gradient('+(~~((-stepLeft+e.pageX)*100/widthShield))+'% '+(~~((-stepTop+e.pageY)*100/widthShield))+'%, circle , rgba(250, 209, 36, 0.5) 0%, rgba(1,1, 1, 1) 15% )';
+	  
+	    candle.style.left = e.pageX-9+'px'; // 25 - половина ширины/высоты мяча
+	    candle.style.top = e.pageY-25+'px';
+	   }
+	 
+	  // перемещать по экрану
+	 //   document.onmousemove = function(e) {
+	  light.onmousemove = function(e) {
+	    fixEvent = e;
+      moveAt(fixEvent);
+	  }
+	 
+	  // отследить окончание переноса
+	  this.onmouseup = function() {
+	    document.onmousemove = light.onmouseup = null;
+	  }
+	}
+	
+	candle.ondragstart = function() {
+	  return false;
+	};
+	
+
+</script>
+
+</body>
+</html>

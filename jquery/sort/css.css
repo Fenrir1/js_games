@@ -1,0 +1,14 @@
+    .theader, .theaderup, .theaderdown {
+        cursor: pointer;
+        padding-right: 11px;
+    }
+    .theaderup {
+        background: url("up.gif");
+        background-repeat: no-repeat;
+        background-position: right;
+    }
+    .theaderdown {
+        background: url("down.gif");
+        background-repeat: no-repeat;
+        background-position: right;
+    }

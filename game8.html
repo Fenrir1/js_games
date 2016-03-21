@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Шахматы</title>
+<meta http-equiv="Content-Type" content="text/html; charset=Windows-1251">
+<script language="javascript" type="text/javascript" src="jquery/jquery-1.4.2.min.js"></script>
+ <link rel="stylesheet" type="text/css" href="jquery/jquery-ui-1.7.2.custom.css"> 
+<link rel="stylesheet" type="text/css" href="game6.css">
+ <script language="javascript" type="text/javascript" src="jquery/jquery-ui-1.7.2.custom.min.js"></script> 
+<style>
+.spoiler-head {	border: 1px solid black;	}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+
+$('.spoiler-body').hide();
+$('.spoiler-head').click(function(){
+$(this).toggleClass("closed").toggleClass("open").next().toggle();
+});
+
+regexp2=/\W/;
+e=document.getElementsByTagName("div");
+for(k=0;k<e.length;k++) {
+if(e[k].className=='posttdMessage') {
+s=e[k].innerHTML;
+
+while (s.indexOf('[mtg]') != -1) {
+
+n=s.substring(s.indexOf('[mtg]')+5,s.indexOf('[/mtg]') );
+
+//n=n.trim();
+
+if(n.match(/\W/)=== null){
+s=s.replace('[mtg]','<a class="simple" href="http://deckbox.org/mtg/');
+s=s.replace('[/mtg]','">'+n+'</a>');
+e[k].innerHTML=s;}
+else{
+s=s.replace('[mtg]','');
+s=s.replace('[/mtg]','');
+e[k].innerHTML=s;
+}
+
+
+}
+
+}}
+
+});
+
+</script>
+</head>
+<body>
+
+<div class="posttdMessage">
+[mtg]duress[/mtg]
+ponder[mtg]<br/>
+duress[/mtg]
+</div>
+
+<div  class="spoiler-wrap">
+
+<div class="spoiler-head" >Внимание, спойлер!</div>
+<div class="spoiler-body">Тут содержимое нашего супер простейшего спойлера
+
+<div  class="spoiler-wrap">
+<div class="spoiler-head">Внимание, спойлер2!</div>
+<div class="spoiler-body">Тут содержимое нашего супер простейшего спойлера2</div>
+</div>
+
+
+</div>
+</div>
+folded
+http://p4wn.sourceforge.net/sven/
+
+<img src="data:image/gif;base64,R0lGODlhEAAOALMAAOazToeHh0tLS/7LZv/0j
+vb29t/f3//Ub//ge8WSLf/rhf/3kdbW1mxsbP//mf///yH5BAAAAAAALAAAAAAQAA4AAA
+Re8L1Ekyky67QZ1hLnjM5UUde0ECwLJoExKcppV0aCcGCmTIHEIUEqjgaORCMxIC6e0Cc
+guWw6aFjsVMkkIr7g77ZKPJjPZqIyd7sJAgVGoEGv2xsBxqNgYPj/gAwXEQA7" width="16" 
+height="14" alt="папка"/>
+
+ <script  language="javascript" type="text/javascript" >
+ jQuery(function(){
+ jQuery("#news-tabs").tabs();
+ jQuery("#news-tabs").css("font-family","PT Sans");
+ jQuery("#news-tabs").css("font-size","14px");
+ });
+ </script>
+
+
+<div id="news-tabs">
+<ul>
+<li><a href="#news-tabs-1">Новости сайта</a></li>
+<li><a href="#news-tabs-2">Интересные новости</a></li>
+</ul>
+<div id="news-tabs-1">
+<p>Здесь будут новости сайта</p>
+</div>
+<div id="news-tabs-2">
+<p>Здесь будут интересные новости</p>
+</div>
+</div>
+
+<div id="tabs"  >
+<ul>
+<li><a href="#tabs-1">Nunc tincidunt</a></li>
+<li><a href="#tabs-2">Proin dolor</a></li>
+<li><a href="#tabs-3">Aenean lacinia</a></li>
+</ul>
+<div id="tabs-1" >
+<p>Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin. Sed ut dolor nec orci tincidunt interdum. Phasellus ipsum. Nunc tristique tempus lectus.</p>
+</div>
+<div id="tabs-2"  >
+<p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
+</div>
+<div id="tabs-3" >
+<p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+<p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+</div>
+</div>
+
+<div style="width: 625px;height: 250px;" >
+
+<div style="width: 40% ; height: 100% ;float: left; margin-right: 10px; text-align: center;" ><img src="lien4.jpg" border="0" width="150" height="250" /></div>
+<div style="height: 100% ;" >
+<div style="height: 80% ;">
+<h1 class="remove-margin" style="color: #e6530d;"><strong>Восстановление информации с HDD</strong></h1>
+<p>Наш сервисный центр  жестких дисков.</p>
+</div>
+<div style="vertical-align:bottom;padding-bottom: 0px; margin-bottom: 0px; height: 20% ;"><a class="button-primary" href="index.php/uslugi/vosstanovlenie-informatsii-s-hdd">Read more</a></div>
+</div>
+
+</div>
+
+<div style="height: 200px;">
+<div class="grid-box width40" style="height: 100%; float: left; margin-right: 10px; text-align: center;"><img src="images/hdd.png" border="0" width="250" height="250" /></div>
+<div style="height: 100%;">
+<div style="height: 80%;">
+<h1 class="remove-margin" style="color: #e6530d;"><strong>Восстановление информации с HDD</strong></h1>
+<p>Наш сервисный центр готов предложить вам ряд услуг по восстановлению данных с поврежденных жестких дисков.</p>
+</div>
+<div style="vertical-align: bottom; padding-bottom: 0px; margin-bottom: 0px; height: 20%;"><a class="button-primary" href="index.php/uslugi/vosstanovlenie-informatsii-s-hdd">Read more</a></div>
+</div>
+</div>
+
+</body>
+</html>

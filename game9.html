@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Шахматы</title>
+<meta http-equiv="Content-Type" content="text/html; charset=Windows-1251">
+<script language="javascript" type="text/javascript" src="jquery/jquery-1.4.2.min.js"></script>
+ <link rel="stylesheet" type="text/css" href="jquery/jquery-ui-1.7.2.custom.css"> 
+<link rel="stylesheet" type="text/css" href="game6.css">
+ <script language="javascript" type="text/javascript" src="jquery/jquery-ui-1.7.2.custom.min.js"></script> 
+ <script language="javascript" type="text/javascript" src="jquery/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="jquery/plugins/jqplot.barRenderer.min.js"></script>
+<script type="text/javascript" src="jquery/plugins/jqplot.highlighter.min.js"></script>
+<script type="text/javascript" src="jquery/plugins/jqplot.canvasTextRenderer.min.js"></script>
+<script type="text/javascript" src="jquery/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+<script type="text/javascript" src="jquery/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+<script type="text/javascript" src="jquery/plugins/jqplot.cursor.min.js"></script>
+<script type="text/javascript" src="jquery/plugins/jqplot.pointLabels.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery/jquery.jqplot.css" /> 
+<style>
+.spoiler-head {	border: 1px solid black;	}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	  line1 = [[0,1],[0,2]];
+	  line2 = [[2,1],[23,2]];
+	  line3 = [[0,1],[0,2]];
+	  line4 = [[0,1],[8,2]];
+	  $.jqplot("example",  [line4,line3,line2,line1], {
+	    title: "Пример диаграммы с метками значений",
+	    stackSeries: true,
+		series: [{label:'44'},{label:'33'},{label:'22'},{label:'11'}], //[{label:'11'},{label:'22'},{label:'33'},{label:'44'}],
+	    seriesDefaults: {
+	      renderer: $.jqplot.BarRenderer,
+	      rendererOptions: { barDirection: 'horizontal', 
+							 barMargin: 10 , barWidth: 20},
+
+		  
+	      pointLabels: { stackedValue: true }
+	    },
+	    axes: {
+	      //xaxis:{ ticks:line2 }
+	      yaxis:{  ticks:[0, 1, 2,3,4] }
+	    },
+		legend: {
+			show: true,
+			location: 'e',
+			placement: 'outside'
+		}  
+	  });
+
+});
+
+</script>
+</head>
+<body>
+
+0,0,2,23,0,0,0,8
+
+<div id="example" style="height:320px; width:400px;"></div>
+</body>
+</html>

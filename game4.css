@@ -1,0 +1,68 @@
+@font-face {
+    font-family: 'Capture_it';
+    src: url('Capture_it.ttf');
+}
+
+body {
+	background-image: url(lien4.jpg);
+	background-color: #4d494c;
+	}
+	
+#discr {
+	width: 70%;
+	text-align: center;
+	padding: 10px;
+	border: 1px solid green;
+    margin: auto;
+	}
+	
+#deckList	{
+	}
+	
+#gameInfo {
+	width: 70%;
+	text-align: center;
+	padding: 10px;
+	border: 1px solid gray;
+    margin: auto;
+	}	
+	
+#listGrave {
+	width: 70%;
+	text-align: center;
+	padding: 10px;
+	border: 1px solid gray;
+    margin: auto;
+	}		
+
+#listExiled {
+	width: 70%;
+	text-align: center;
+	padding: 10px;
+	border: 1px solid gray;
+    margin: auto;
+	}	
+
+#scryList {
+	width: 70%;
+	text-align: center;
+	padding: 10px;
+	background-color: #c7b39b;
+	}		
+	
+#mainTable	td {
+	vertical-align: top;
+	font-family: 'Capture_it';
+	color: #BF6230;
+	}
+	
+.imgList ul {
+ margin: 0;
+ padding: 0;
+ list-style: none;
+}
+
+.imgList li {
+ display: inline;
+ float: left;
+}	

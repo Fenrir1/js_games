@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv=content-type content='text/html; charset=windows-1251'>
+<meta http-equiv='Cache-Control' content='no-cache, must-revalidate'>
+<meta http-equiv='Pragma' content='no-cache'>
+<title>Головоломки</title>
+<script language="javascript" type="text/javascript" src="jquery/jquery-1.4.2.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery/jquery-ui-1.7.2.custom.css">
+<script language="javascript" type="text/javascript" src="jquery/jquery-ui-1.7.2.custom.min.js"></script>
+<style type="text/css">
+<!--
+body {
+	margin: 0px;
+}
+
+-->
+</style>
+<script>
+ var startMap=[[1,5,9,13],[2,6,10,14],[3,7,11,15],[4,8,12,0]];
+ //var currentMap=[[1,5,9,13],[2,0,11,10],[3,8,6,14],[4,7,12,15]];
+ var currentMap=[[3,2,5,8], [7,13,14,1], [11,9,6,10], [15,4,12,0] ];
+ 
+
+ var elementSize=30;
+ var elementsCount=16;
+ var mapHight=4;
+ var mapWidth=4;
+ var canvasHight=110;
+ var canvasWidth=110;
+ var animationSpeed=24;
+ var MaxMoves=200;
+ var currentMove=0;
+ var currentNumber=0;
+ var timer=0;
+ 
+ function findNum(num,map)
+ {
+  var Position = {
+      x: 0,
+      y: 0 };
+  
+  for (var i=0;i<mapWidth;i++){
+   for (var j=0;j<mapHight;j++){
+    if (map[i][j]==num){
+	 Position.x=i;
+	 Position.y=j;
+	 return Position;
+	}
+   }
+  }
+  
+  return Null;
+ }
+ 
+ function findManhattan(num,cmap,smap)
+ {
+  var xCurrent=0;
+  var yCurrent=0;
+  var xTarget=0;
+  var yTarget=0;
+  
+  var posCurrrent=findNum(num,cmap);
+  var posTarget=findNum(num,smap);
+  
+  xCurrent=posCurrrent.x;
+  yCurrent=posCurrrent.y;
+  xTarget=posTarget.x;
+  yTarget=posTarget.y;
+  
+   
+  var h=Math.abs(xCurrent-xTarget)+Math.abs(yCurrent-yTarget);
+  //alert(num+":"+xCurrent+","+yCurrent+";"+xTarget+","+yTarget+"="+h);
+  return h;
+ }
+ 
+ function findLinearConflict(num,cmap,smap)
+ {
+  var xCurrent=0;
+  var yCurrent=0;
+  var xTarget=0;
+  var yTarget=0;
+  
+  var x1Current=0;
+  var y1Current=0;
+  var x1Target=0;
+  var y1Target=0;
+  
+  var leftConflict=0;
+  var rightConflict=0;
+  var upConflict=0;
+  var downConflict=0;
+  
+  var pos1Currrent={};
+  var pos1Target={};
+  
+  var posCurrrent=findNum(num,cmap);
+  var posTarget=findNum(num,smap);
+  
+  var l=0;
+  
+  xCurrent=posCurrrent.x;
+  yCurrent=posCurrrent.y;
+  if ((num==12)&&(yCurrent!=3))  l+=2;
+  if ((num==15)&&(xCurrent!=3))  l+=2;
+ 
+ 
+  xTarget=posTarget.x;
+  yTarget=posTarget.y;
+  
+  if (xCurrent!=0)
+   if (cmap[xCurrent-1][yCurrent]!=0)
+   {
+    pos1Target=findNum(cmap[xCurrent-1][yCurrent],smap);
+    x1Current=xCurrent-1;
+	y1Current=yCurrent;
+    x1Target=pos1Target.x;
+	y1Target=pos1Target.y;
+    if ((y1Current==y1Target)&&(yCurrent==yTarget)&&(x1Current<xCurrent)&&(x1Target>xTarget)){
+	  l+=2;
+	  leftConflict=1;
+	}
+  
+  }
+  
+  if (xCurrent!=3)
+   if (cmap[xCurrent+1][yCurrent]!=0)
+   {
+    pos1Target=findNum(cmap[xCurrent+1][yCurrent],smap);
+    x1Current=xCurrent+1;
+	y1Current=yCurrent;
+    x1Target=pos1Target.x;
+	y1Target=pos1Target.y;
+    if ((y1Current==y1Target)&&(yCurrent==yTarget)&&(x1Current>xCurrent)&&(x1Target<xTarget)){
+	  l+=2;
+	  rightConflict=1;
+	}
+  }
+  
+   if (yCurrent!=0)
+   if (cmap[xCurrent][yCurrent-1]!=0)
+   {
+    //pos1Currrent=findNum(currentMap[xCurrent][yCurrent-1],currentMap);
+    pos1Target=findNum(cmap[xCurrent][yCurrent-1],smap);
+    x1Current=xCurrent;
+	y1Current=yCurrent-1;
+    x1Target=pos1Target.x;
+	y1Target=pos1Target.y;
+    if ((x1Current==x1Target)&&(xCurrent==xTarget)&&(y1Current<yCurrent)&&(y1Target>yTarget)){
+	  l+=2;
+	  upConflict=1;
+	}
+  
+  }
+  
+  if (yCurrent!=3)
+   if (cmap[xCurrent][yCurrent+1]!=0)
+   {
+    //pos1Currrent=findNum(currentMap[xCurrent][yCurrent+1],currentMap);
+    pos1Target=findNum(cmap[xCurrent][yCurrent+1],smap);
+    x1Current=xCurrent;
+	y1Current=yCurrent+1;
+    x1Target=pos1Target.x;
+	y1Target=pos1Target.y;
+    if ((x1Current==x1Target)&&(xCurrent==xTarget)&&(y1Current>yCurrent)&&(y1Target<yTarget)){
+	  l+=2;
+	  downConflict=1;
+	}
+  }
+  
+  if ((yCurrent==3)&&(xCurrent==0)&&(cmap[xCurrent][yCurrent]!=0)&&(cmap[xCurrent][yCurrent]!=smap[xCurrent][yCurrent]))
+  {
+   if (((cmap[xCurrent][yCurrent-1]==smap[xCurrent][yCurrent-1])&&(upConflict==0))||
+       ((cmap[xCurrent+1][yCurrent]==smap[xCurrent+1][yCurrent])&&(rightConflict==0)))
+	  l+=2;  
+  }
+  
+  if ((yCurrent==0)&&(xCurrent==0)&&(cmap[xCurrent][yCurrent]!=0)&&(cmap[xCurrent][yCurrent]!=smap[xCurrent][yCurrent]))
+  {
+   if (((cmap[xCurrent][yCurrent+1]==smap[xCurrent][yCurrent+1])&&(downConflict==0))||
+       ((cmap[xCurrent+1][yCurrent]==smap[xCurrent+1][yCurrent])&&(rightConflict==0)))
+	  l+=2;  
+  }
+  
+  if ((yCurrent==0)&&(xCurrent==3)&&(cmap[xCurrent][yCurrent]!=0)&&(cmap[xCurrent][yCurrent]!=smap[xCurrent][yCurrent]))
+  {
+   if (((cmap[xCurrent][yCurrent+1]==smap[xCurrent][yCurrent+1])&&(downConflict==0))||
+       ((cmap[xCurrent-1][yCurrent]==smap[xCurrent-1][yCurrent])&&(leftConflict==0)))
+	  l+=2;  
+  }
+  
+  
+ 
+ return l; 
+ }
+ 
+ function findWeight(map)
+ {
+  var w=0;
+   for (var i=0;i<mapWidth;i++){
+   for (var j=0;j<mapHight;j++){
+    if (map[i][j]!=0){
+	 w+=findManhattan(map[i][j],map,startMap)+findLinearConflict(map[i][j],map,startMap);
+	// $('#test').append(findManhattan(map[i][j])+","+findLinearConflict(map[i][j])+";");
+	}
+	//else 
+	// $('#test').append("Nol;");
+   }
+   //$('#test').append("<br/>");
+  }
+  // $('#test').append("<br/>"+w);
+  return w
+  //alert(rTemp);
+ }
+ 
+ function tryToSolve()
+ {
+  var map=[];
+  currentMap.forEach(function(subArray) {
+    map.push(subArray.concat());
+    });
+
+  
+  var xNull=0;
+  var yNull=0;
+  var xTarget=0;
+  var yTarget=0;
+  var valTarget=0;
+  var map1=[];
+  
+  var posNull=findNum(0,map);
+  //var posTarget=findNum(num,startMap);
+  
+  xNull=posNull.x;
+  yNull=posNull.y;
+  
+  var direction="";
+  var w=0;
+  var w1=0;
+  
+  //alert(xNull+" "+yNull+" "+w);
+  
+  if (yNull!=3)
+   if (map[xNull][yNull+1]!=currentNumber)
+  {
+   //moveElementXY(x,y,map[x][y],'down',animationSpeed);
+    //map1=map.slice(0);
+	map.forEach(function(subArray) {
+    map1.push(subArray.concat());
+    });
+   map1[xNull][yNull]=map1[xNull][yNull+1];
+   map1[xNull][yNull+1]=0;
+   w1=findWeight(map1);
+   //alert("up "+w1);
+   //alert(map1);
+   if ((w1<=w)||(w==0)){
+    w=w1;
+	//alert("yes");
+    xTarget=xNull;
+	yTarget=yNull+1;
+	valTarget=map1[xNull][yNull]
+    direction='up';
+   }
+  }
+  if (yNull!=0)
+   if (map[xNull][yNull-1]!=currentNumber)
+  {
+   //moveElementXY(x,y,map[x][y],'down',animationSpeed);
+   map1=[];
+   map.forEach(function(subArray) {
+    map1.push(subArray.concat());
+    });
+   map1[xNull][yNull]=map1[xNull][yNull-1];
+   map1[xNull][yNull-1]=0;
+   w1=findWeight(map1);
+   //alert("down"+w1);
+   //alert(map1);
+   if ((w1<=w)||(w==0)){
+    w=w1;
+	//alert(xNull+","+(yNull-1)+":"+map1[xNull][yNull]);
+    xTarget=xNull;
+	yTarget=yNull-1;
+	valTarget=map1[xNull][yNull]
+    direction='down';
+   }
+  }
+  if (xNull!=3)
+   if (map[xNull+1][yNull]!=currentNumber)
+  {
+   //moveElementXY(x,y,map[x][y],'down',animationSpeed);
+   map1=[];
+   map.forEach(function(subArray) {
+    map1.push(subArray.concat());
+    });
+   map1[xNull][yNull]=map1[xNull+1][yNull];
+   map1[xNull+1][yNull]=0;
+   w1=findWeight(map1);
+   //alert("left"+w1);
+   //alert(map1);
+   if ((w1<=w)||(w==0)){
+    w=w1;
+	//alert("yes");
+    xTarget=xNull+1;
+	yTarget=yNull;
+	valTarget=map1[xNull][yNull]
+    direction='left';
+   }
+  }
+  if (xNull!=0)
+   if (map[xNull-1][yNull]!=currentNumber)
+  {
+   //moveElementXY(x,y,map[x][y],'down',animationSpeed);
+   map1=[];
+   map.forEach(function(subArray) {
+    map1.push(subArray.concat());
+    });
+   map1[xNull][yNull]=map1[xNull-1][yNull];
+   map1[xNull-1][yNull]=0;
+   w1=findWeight(map1);
+   //alert("right"+w1);
+   //alert(map1);
+   if ((w1<=w)||(w==0)){
+    w=w1;
+	//alert("yes");
+    xTarget=xNull-1;
+	yTarget=yNull;
+	valTarget=map1[xNull][yNull]
+    direction='right';
+   }
+  }
+  
+ // alert(xTarget+","+yTarget+"="+w);
+  
+  if ((currentMove<MaxMoves)&&(w>0)){
+    currentMove++;
+	currentNumber=valTarget;
+	moveElement(xTarget,yTarget,currentMap);
+	//setTimeout(tryToSolve(), 1000*30/24);
+	//tryToSolve();
+	//moveElementXY(xTarget,yTarget,valTarget,direction,animationSpeed);
+  }
+  else
+   clearInterval(timer);
+  
+ }
+ 
+ function outputConditions()
+ {
+  for (var i=0;i<mapWidth;i++){
+   for (var j=0;j<mapHight;j++){
+	 $('#test').append(startMap[i][j]+",");
+	}
+	$('#test').append("<br/>");
+   }
+
+   $('#test').append("<br/>");
+   for (var i=0;i<mapWidth;i++){
+   for (var j=0;j<mapHight;j++){
+	 $('#test').append(currentMap[i][j]+",");
+	}
+	$('#test').append("<br/>");
+   }
+  
+  //alert(rTemp);
+ }
+ 
+ function drowElementXY(x,y,num)
+ {
+  if (num != 0){
+  var c=document.getElementById("mainField"); 
+  var ctx=c.getContext('2d');
+  /*ctx.fillStyle=color;
+  ctx.fillRect(x*10,y*10,10,10);*/
+  var img=new Image();
+  img.src="img/bt"+num+".jpg";
+  ctx.drawImage(img,x*elementSize,y*elementSize,elementSize,elementSize);
+  }
+ }
+ 
+ function moveElementXY(x,y,num,direction,fps)
+ {
+  if (direction != 0){
+  
+  var  xCurrent=x*elementSize;
+  var  yCurrent=y*elementSize;
+  var stepCurrent=0;
+  var interval=null;
+  
+  var c=document.getElementById("mainField"); 
+  var ctx=c.getContext('2d');
+  ctx.fillStyle='white';
+  var img=new Image();
+  img.src="img/bt"+num+".jpg";
+  
+      var step = function() {
+	    if (stepCurrent>=elementSize) clearInterval(interval)
+		else
+		{
+        ctx.clearRect(xCurrent,yCurrent, elementSize, elementSize);
+        if (stepCurrent<elementSize){
+		    if (direction=='down') yCurrent++;
+			if (direction=='up') yCurrent--;
+			if (direction=='left') xCurrent--;
+			if (direction=='right') xCurrent++;
+			stepCurrent++;
+		}
+	    ctx.drawImage(img,xCurrent,yCurrent,elementSize,elementSize);
+		}
+      };
+  
+   interval = setInterval(step, 1000 / fps); 
+
+   
+  }
+ }
+ 
+ function anim(canvas,x,y, fps, clear)
+{
+    var context = canvas.getContext("2d");
+    var interval = null;
+    var update = null;
+    var draw = null;
+ 
+    this.update = function(func) {
+        update = func;
+    };
+ 
+    this.draw = function(func) {
+        draw = func;
+    };
+ 
+    var step = function() {
+        if (clear) {
+            context.clearRect(x*elementSize,y*elementSize, canvas.width, canvas.height);;
+        }
+        if (update !== null) {
+            update();
+        }
+        if (draw !== null) {
+            draw();
+        }
+    };
+ 
+    this.stop = function() {
+        clearInterval(interval);
+    };
+ 
+    this.play = function() {
+        if (draw !== null) {
+            draw();
+        }
+        interval = setInterval(step, 1000 / fps);
+    };
+}
+ 
+  function drowMap(map)
+ {
+   for (var i = 0; i < map.length; i++) {
+        for (var j = 0; j < map[i].length; j++) {
+     	    drowElementXY(i,j,map[i][j])
+        }
+    }
+ }
+ 
+ function moveElement(x,y,map)
+ {
+  if (y!=3)
+   if (map[x][y+1]==0)
+  {
+   moveElementXY(x,y,map[x][y],'down',animationSpeed);
+   map[x][y+1]=map[x][y];
+   map[x][y]=0;
+  }
+  if (y!=0)
+   if (map[x][y-1]==0)
+  {
+   moveElementXY(x,y,map[x][y],'up',animationSpeed);
+   map[x][y-1]=map[x][y];
+   map[x][y]=0;
+  }
+  if (x!=0)
+   if (map[x-1][y]==0)
+  {
+   moveElementXY(x,y,map[x][y],'left',animationSpeed);
+   map[x-1][y]=map[x][y];
+   map[x][y]=0;
+  }
+  if (x!=3)
+   if (map[x+1][y]==0)
+  {
+   moveElementXY(x,y,map[x][y],'right',animationSpeed);
+   map[x+1][y]=map[x][y];
+   map[x][y]=0;
+  }
+ }
+ 
+ function stopMove()
+ {
+    $("#mainField").unbind();
+    $("#mainField").click(function(e){goTest(e);});
+ }
+ 
+ function goTest(e)
+ {
+    var x = Math.floor((e.pageX-$("#mainField").offset().left) / elementSize);
+    var y = Math.floor((e.pageY-$("#mainField").offset().top) / elementSize);
+	
+	alert(findLinearConflict(currentMap[x][y],currentMap,startMap));
+ }
+ 
+</script>
+</head>
+<body>
+
+<h3>Пятнашки</h3>
+
+<label for="rang" >Выберите количество элементов</label>
+<select id="rang" >
+<option value=15 >15</option>
+<option value=8 >8</option>
+</select>
+</br>
+
+<canvas id="mainField" width=120 height=120 >
+</canvas>
+
+<!-- <button onclick="moveElementXY(3,2,12,'down',24);" >Click for test!</button> -->
+<br/>
+<button onclick="findWeight(currentMap);" >Find Weight!</button>
+<br/>
+<button onclick="stopMove();" >Stop Movig!</button>
+<br/>
+<button onclick="outputConditions();" >output Conditions!</button>
+<br/>
+<button onclick="timer=setInterval('tryToSolve();', 1000);" >tryToSolve!</button>
+
+<div id="test" ></div>
+
+<script>  
+  //drowElementXY(3,2,12);
+ /*drowElementXY(1,1,2); 
+ drowElementXY(2,2,3); */
+ drowMap(currentMap);
+  $("#mainField").click(function(e){
+    var x = Math.floor((e.pageX-$("#mainField").offset().left) / elementSize);
+    var y = Math.floor((e.pageY-$("#mainField").offset().top) / elementSize);
+	moveElement(x,y,currentMap);
+    //alert(x+" "+ y + " "+  startMap[x][y]);
+ });
+
+</script>
+
+</body>
+<html>
